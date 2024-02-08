@@ -3,8 +3,8 @@ import datetime
 import copy
 import pandas as pd
 import itertools
-from serialize_model import serialize_model
-from evaluate import evaluate, load_datasets
+from prod.serialize_model import serialize_model
+from prod.evaluate import evaluate, load_datasets
 import pdb
 
 if __name__ == "__main__":
@@ -38,5 +38,5 @@ if __name__ == "__main__":
 
 
     df = pd.concat(df_list, axis=0, ignore_index=True)
-    os.makedirs('../results', exist_ok=True)
-    df.to_csv('../results/metrics.csv', index=False)
+    os.makedirs('./results', exist_ok=True)
+    df.to_csv('./results/metrics.csv', index=False)

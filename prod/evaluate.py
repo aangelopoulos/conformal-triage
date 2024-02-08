@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import pickle as pkl
@@ -55,7 +56,10 @@ def evaluate(sgmds, labels, cls=None):
 
 def load_datasets(ids=False):
     # Load Data
-    data = np.load('../data/proc-ich-me-data.npz')
+    # Get this file parent directory
+    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    # open dir_path/data/proc-ich-me-data.npz
+    data = np.load(dir_path + '/data/proc-ich-me-data.npz')
     shuffler = np.random.permutation(data['labels'].shape[0])
     sgmds = data['slice_probs'][shuffler,:]
     labels = data['labels'].astype(bool)[shuffler]
@@ -64,7 +68,10 @@ def load_datasets(ids=False):
         diagnostic_ids = data['diagnostic_id'][shuffler]
 
     # Load Data (Small dataset)
-    data_small = np.load('../data/proc-small-clean.npz')
+    # Get this file parent directory
+    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    # open dir_path/data/proc-small-clean.npz
+    data_small = np.load(dir_path + '/data/proc-small-clean.npz')
     shuffler_small = np.random.permutation(data_small['labels'].shape[0])
     sgmds_small = data_small['slice_probs'][shuffler_small,:]
     labels_small = data_small['labels'].astype(bool)[shuffler_small]
