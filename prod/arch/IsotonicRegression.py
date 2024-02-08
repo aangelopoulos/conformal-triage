@@ -19,7 +19,7 @@ class IsotonicRegressionClassifierAbstention():
         cal_phats_hi = self.predict_proba(cal_sgmds)[:,1]
 
         # Calibrate lambdas to achieve ppv and npv guarantees
-        min_data = 50
+        min_data = [500, 50] # positive, negative
         num_thresh = 5000
         lhat_lowrisk, lhat_highrisk = calibrate(cal_phats_lo, cal_phats_hi, cal_labels, desired_ppv, desired_npv, tolerance, num_thresh, min_data)
         self.lambda_hi = lhat_highrisk

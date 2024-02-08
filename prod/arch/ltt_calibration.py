@@ -4,12 +4,19 @@ from scipy.optimize import brentq
 import pdb
 
 def calibrate(cal_phats_lo, cal_phats_hi, cal_labels, desired_ppv, desired_npv, tolerance, num_thresh, min_data):
+    # if min_data is a list, then it is the minimum number of data points in each bin for each class
+    if isinstance(min_data, list):
+        min_data_lo = min_data[0]
+        min_data_hi = min_data[1]
+    else:
+        min_data_lo = min_data
+        min_data_hi = min_data
     # Set up grid
     lambdas = np.linspace(0.01,0.99,num_thresh)
     # Calibrate lambda_hi to achieve ppv guarantee
     def selective_frac_nonich(lam): return 1-cal_labels[cal_phats_hi > lam].sum()/(cal_phats_hi > lam).sum()
     def nlambda(lam): return (cal_phats_hi > lam).sum()
-    lambdas_highrisk = np.array([lam for lam in lambdas if nlambda(lam) >= min_data]) # Make sure there's some data in the top bin.
+    lambdas_highrisk = np.array([lam for lam in lambdas if nlambda(lam) >= min_data_hi]) # Make sure there's some data in the top bin.
     def invert_for_ub(r,lam): return binom.cdf(selective_frac_nonich(lam)*nlambda(lam),nlambda(lam),r)-tolerance
 # Construct upper bound
     def selective_risk_ub(lam): return brentq(invert_for_ub,0,0.9999,args=(lam,))
@@ -23,7 +30,7 @@ def calibrate(cal_phats_lo, cal_phats_hi, cal_labels, desired_ppv, desired_npv, 
     # Calibrate lambda_lo to achieve npv guarantee
     def selective_frac_ich(lam): return cal_labels[cal_phats_lo > lam].sum()/(cal_phats_lo > lam).sum()
     def nlambda(lam): return (cal_phats_lo > lam).sum()
-    lambdas_lowrisk = np.array([lam for lam in lambdas if nlambda(lam) >= 2*min_data]) # Make sure there's some data in the top bin.
+    lambdas_lowrisk = np.array([lam for lam in lambdas if nlambda(lam) >= min_data_lo]) # Make sure there's some data in the top bin.
     def invert_for_ub(r,lam): return binom.cdf(selective_frac_ich(lam)*nlambda(lam),nlambda(lam),r)-tolerance
     # Construct upper bound
     def selective_risk_ub(lam): return brentq(invert_for_ub,0,0.9999,args=(lam,))

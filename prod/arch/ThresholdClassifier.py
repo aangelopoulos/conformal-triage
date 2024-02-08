@@ -14,7 +14,7 @@ class ThresholdClassifierAbstention():
         self.desired_npv = -1
         self.tolerance = 0.2
         self.num_thresh = num_thresh
-        self.min_data = 50
+        self.min_data = [500, 50]
 
     def fit(self, sgmds, labels):
         sgmds2 = sgmds.copy()
@@ -63,7 +63,7 @@ class ThresholdClassifierAbstention():
 
         def selective_frac_nonich(lam): return 1-cal_labels[cal_phats_hi > lam].sum()/(cal_phats_hi > lam).sum()
         def nlambda(lam): return (cal_phats_hi > lam).sum()
-        lambdas_highrisk = np.array([lam for lam in lambdas if nlambda(lam) >= self.min_data]) # Make sure there's some data in the top bin.
+        lambdas_highrisk = np.array([lam for lam in lambdas if nlambda(lam) >= self.min_data[1]]) # Make sure there's some data in the top bin.
         def invert_for_ub(r,lam): return binom.cdf(selective_frac_nonich(lam)*nlambda(lam),nlambda(lam),r)-tolerance
 # Construct upper bound
         def selective_risk_ub(lam): return brentq(invert_for_ub,0,0.9999,args=(lam,))
@@ -76,7 +76,7 @@ class ThresholdClassifierAbstention():
         # Calibrate lambda_lo to achieve npv guarantee
         def selective_frac_ich(lam): return cal_labels[cal_phats_lo <= lam].sum()/(cal_phats_lo <= lam).sum()
         def nlambda(lam): return (cal_phats_lo <= lam).sum()
-        lambdas_lowrisk = np.array([lam for lam in lambdas if nlambda(lam) >= 2*self.min_data]) # Make sure there's some data in the top bin.
+        lambdas_lowrisk = np.array([lam for lam in lambdas if nlambda(lam) >= self.min_data[0]]) # Make sure there's some data in the top bin.
         def invert_for_ub(r,lam): return binom.cdf(selective_frac_ich(lam)*nlambda(lam),nlambda(lam),r)-tolerance
         # Construct upper bound
         def selective_risk_ub(lam): return brentq(invert_for_ub,0,0.9999,args=(lam,))

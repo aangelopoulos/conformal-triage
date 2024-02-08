@@ -13,7 +13,7 @@ if __name__ == "__main__":
     desired_npvs = [0.9, 0.925, 0.95, 0.96, 0.97]
     tolerance = 0.2
     date = datetime.datetime.now().strftime("%Y-%m-%d")
-    n_train = 1000
+    n_train = 3000
     n_val = 1000
 
     # For each combination of desired ppv and npv, using itertools
